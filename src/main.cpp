@@ -17,6 +17,7 @@
 
 #include <QtCore/QFile>
 
+#include "core/Config.h"
 #include "core/Tools.h"
 #include "crypto/Crypto.h"
 #include "gui/Application.h"
@@ -36,6 +37,9 @@ int main(int argc, char** argv)
 
     QString filename;
     QString password;
+
+    QStringList lastDatabases = config()->get("LastDatabases", QVariant()).toStringList();
+	filename = lastDatabases.at(0).toLocal8Bit().constData();
 
     const QStringList args = app.arguments();
     for (int i = 1; i < args.size(); i++) {
