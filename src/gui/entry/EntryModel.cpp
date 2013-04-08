@@ -28,7 +28,7 @@ EntryModel::EntryModel(QObject* parent)
     : QAbstractTableModel(parent)
     , m_group(Q_NULLPTR)
 {
-    setSupportedDragActions(Qt::MoveAction);
+    setSupportedDragActions(Qt::MoveAction | Qt::CopyAction);
 }
 
 Entry* EntryModel::entryFromIndex(const QModelIndex& index) const
@@ -211,16 +211,30 @@ QMimeData* EntryModel::mimeData(const QModelIndexList& indexes) const
     QByteArray encoded;
     QDataStream stream(&encoded, QIODevice::WriteOnly);
 
-    for (int i = 0; i < indexes.size(); i++) {
-        if (!indexes[i].isValid()) {
+    QSet<Entry*> seenEntries;
+
+    Q_FOREACH (const QModelIndex& index, indexes) {
+        if (!index.isValid()) {
             continue;
         }
-        Entry* entry = entryFromIndex(indexes[i]);
-        stream << entry->group()->database()->uuid() << entry->uuid();
+
+        Entry* entry = entryFromIndex(index);
+        if (!seenEntries.contains(entry)) {
+            // make sure we don't add entries multiple times when we get indexes
+            // with the same row but different columns
+            stream << entry->group()->database()->uuid() << entry->uuid();
+            seenEntries.insert(entry);
+        }
     }
 
-    data->setData(mimeTypes().first(), encoded);
-    return data;
+    if (seenEntries.isEmpty()) {
+        delete data;
+        return Q_NULLPTR;
+    }
+    else {
+        data->setData(mimeTypes().first(), encoded);
+        return data;
+    }
 }
 
 void EntryModel::entryAboutToAdd(Entry* entry)

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010 Felix Geyer <debfx@fobos.de>
+ *  Copyright (C) 2013 Felix Geyer <debfx@fobos.de>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,26 +15,28 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KEEPASSX_TESTGROUP_H
-#define KEEPASSX_TESTGROUP_H
+#ifndef KEEPASSX_TEST_ARGUMENT_PARSER_H
+#define KEEPASSX_TEST_ARGUMENT_PARSER_H
 
 #include <QtCore/QObject>
+#include <QtCore/QHash>
 
-class TestGroup : public QObject
+class TestArgumentParser : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-    void initTestCase();
-    void testParenting();
-    void testSignals();
-    void testEntries();
-    void testDeleteSignals();
-    void testCopyCustomIcon();
-    void testSearch();
-    void testAndConcatenationInSearch();
-    void testClone();
-    void testCopyCustomIcons();
+    void testNoArguments();
+    void testUnknownArgument();
+    void testFilename();
+    void testMultipleArguments();
+    void testFilenameWithoutOption();
+
+private:
+    void parse(const QStringList& arguments);
+
+    QHash<QString, QString> argumentMap;
+
 };
 
-#endif // KEEPASSX_TESTGROUP_H
+#endif // KEEPASSX_TEST_ARGUMENT_PARSER_H

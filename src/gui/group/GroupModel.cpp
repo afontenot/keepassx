@@ -23,6 +23,7 @@
 #include "core/Database.h"
 #include "core/DatabaseIcons.h"
 #include "core/Group.h"
+#include "core/Metadata.h"
 #include "core/Tools.h"
 
 GroupModel::GroupModel(Database* db, QObject* parent)
@@ -182,7 +183,7 @@ Group* GroupModel::groupFromIndex(const QModelIndex& index) const
 
 Qt::DropActions GroupModel::supportedDropActions() const
 {
-    return Qt::MoveAction;
+    return Qt::MoveAction | Qt::CopyAction;
 }
 
 Qt::ItemFlags GroupModel::flags(const QModelIndex& modelIndex) const
@@ -203,7 +204,11 @@ bool GroupModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
 {
     Q_UNUSED(column);
 
-    if (!data || (action != Qt::MoveAction) || !parent.isValid()) {
+    if (action == Qt::IgnoreAction) {
+        return true;
+    }
+
+    if (!data || (action != Qt::MoveAction && action != Qt::CopyAction) || !parent.isValid()) {
         return false;
     }
 
@@ -250,7 +255,23 @@ bool GroupModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
             row--;
         }
 
-        dragGroup->setParent(parentGroup, row);
+        Group* group;
+        if (action == Qt::MoveAction) {
+            group = dragGroup;
+        }
+        else {
+            group = dragGroup->clone();
+        }
+
+        Database* sourceDb = dragGroup->database();
+        Database* targetDb = parentGroup->database();
+
+        if (sourceDb != targetDb) {
+            QSet<Uuid> customIcons = group->customIconsRecursive();
+            targetDb->metadata()->copyCustomIcons(customIcons, sourceDb->metadata());
+        }
+
+        group->setParent(parentGroup, row);
     }
     else {
         if (row != -1) {
@@ -272,7 +293,25 @@ bool GroupModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
                 continue;
             }
 
-            dragEntry->setGroup(parentGroup);
+            Entry* entry;
+            if (action == Qt::MoveAction) {
+                entry = dragEntry;
+            }
+            else {
+                entry = dragEntry->clone();
+            }
+
+            Database* sourceDb = dragEntry->group()->database();
+            Database* targetDb = parentGroup->database();
+            Uuid customIcon = entry->iconUuid();
+
+            if (sourceDb != targetDb && !customIcon.isNull()
+                    && !targetDb->metadata()->containsCustomIcon(customIcon)) {
+                targetDb->metadata()->addCustomIcon(customIcon,
+                                                    sourceDb->metadata()->customIcon(customIcon));
+            }
+
+            entry->setGroup(parentGroup);
         }
     }
 
@@ -297,15 +336,30 @@ QMimeData* GroupModel::mimeData(const QModelIndexList& indexes) const
     QByteArray encoded;
     QDataStream stream(&encoded, QIODevice::WriteOnly);
 
-    for (int i = 0; i < indexes.size(); i++) {
-        if (!indexes[i].isValid()) {
+    QSet<Group*> seenGroups;
+
+    Q_FOREACH (const QModelIndex& index, indexes) {
+        if (!index.isValid()) {
             continue;
         }
-        stream << m_db->uuid() << groupFromIndex(indexes[i])->uuid();
+
+        Group* group = groupFromIndex(index);
+        if (!seenGroups.contains(group)) {
+            // make sure we don't add groups multiple times when we get indexes
+            // with the same row but different columns
+            stream << m_db->uuid() << group->uuid();
+            seenGroups.insert(group);
+        }
     }
 
-    data->setData(mimeTypes().first(), encoded);
-    return data;
+    if (seenGroups.isEmpty()) {
+        delete data;
+        return Q_NULLPTR;
+    }
+    else {
+        data->setData(mimeTypes().first(), encoded);
+        return data;
+    }
 }
 
 void GroupModel::groupDataChanged(Group* group)
