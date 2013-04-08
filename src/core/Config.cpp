@@ -92,7 +92,9 @@ void Config::init(const QString& fileName)
     m_defaults.insert("AutoSaveAfterEveryChange", false);
     m_defaults.insert("AutoSaveOnExit", false);
     m_defaults.insert("ShowToolbar", true);
-    m_defaults.insert("security/clearclipboard", true);
+	m_defaults.insert("LockOnInactivity", true);
+	m_defaults.insert("LockAfterSec", 300);
+	m_defaults.insert("security/clearclipboard", true);
     m_defaults.insert("security/clearclipboardtimeout", 10);
 }
 

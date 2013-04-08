@@ -14,13 +14,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include <QTimer>
 
 #include <QtGui/QCloseEvent>
 #include <QtGui/QShortcut>
-
 #include "autotype/AutoType.h"
 #include "core/Config.h"
 #include "core/Database.h"
@@ -38,6 +37,16 @@ MainWindow::MainWindow()
     : m_ui(new Ui::MainWindow())
 {
     m_ui->setupUi(this);
+
+	inactivityCounter = 0;
+	inactivityInterval = 500;
+	eventOccurred = false;
+
+	inactivityTimer = new QTimer(this);
+	inactivityTimer->setInterval(inactivityInterval);
+	connect(inactivityTimer, SIGNAL(timeout()), this,  SLOT(onInactivityTimer()));
+	if (config()->get("LockOnInactivity").toBool() && config()->get("LockAfterSec").toInt() != 0)
+		inactivityTimer->start();
 
     setWindowIcon(filePath()->applicationIcon());
     QAction* toggleViewAction = m_ui->toolBar->toggleViewAction();
@@ -418,6 +427,24 @@ void MainWindow::showGroupContextMenu(const QPoint& globalPos)
 void MainWindow::saveToolbarState(bool value)
 {
     config()->set("ShowToolbar", value);
+}
+
+void MainWindow::onInactivityTimer()
+{
+	if (QApplication::activeModalWidget() != NULL || eventOccurred) 
+	{
+		inactivityCounter = 0;
+		eventOccurred = false;
+	}
+	else 
+	{
+		inactivityCounter++;
+		if (inactivityCounter * inactivityInterval >= config()->get("LockAfterSec").toInt() * 1000)
+		{
+			inactivityCounter = 0;
+			m_ui->tabWidget->lockDatabases();
+		}
+	}
 }
 
 void MainWindow::setShortcut(QAction* action, QKeySequence::StandardKey standard, int fallback)

@@ -58,7 +58,7 @@ endmacro(add_gcc_compiler_flags)
 
 add_definitions(-DQT_NO_KEYWORDS -DQT_NO_EXCEPTIONS -DQT_NO_STL -DQT_STRICT_ITERATORS -DQT_NO_CAST_TO_ASCII)
 
-add_gcc_compiler_flags("-fno-common -fstack-protector -D_FORTIFY_SOURCE=2")
+add_gcc_compiler_flags("-O -fno-common -fstack-protector -D_FORTIFY_SOURCE=2")
 add_gcc_compiler_flags("-Wall -Wextra -Wundef -Wpointer-arith -Wno-long-long")
 add_gcc_compiler_flags("-Wformat=2 -Wmissing-format-attribute")
 add_gcc_compiler_flags("-fvisibility=hidden")
@@ -155,6 +155,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 find_package(Qt4 4.6.0 REQUIRED ${QT_REQUIRED_MODULES})
+include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS} -DQT_CORE_LIB -DQT_GUI_LIB)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG QT_DEBUG)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_RELEASE QT_NO_DEBUG)
