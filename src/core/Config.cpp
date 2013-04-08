@@ -92,6 +92,7 @@ void Config::init(const QString& fileName)
     m_defaults.insert("AutoSaveAfterEveryChange", false);
     m_defaults.insert("AutoSaveOnExit", false);
     m_defaults.insert("ShowToolbar", true);
+	// TODO the lock options should be security/ options. must change code-wide.
 	m_defaults.insert("LockOnInactivity", true);
 	m_defaults.insert("LockAfterSec", 300);
 	m_defaults.insert("security/clearclipboard", true);

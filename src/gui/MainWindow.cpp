@@ -431,6 +431,7 @@ void MainWindow::saveToolbarState(bool value)
 
 void MainWindow::onInactivityTimer()
 {
+	// TODO get eventOccurred working to avoid some nasty issues
 	if (QApplication::activeModalWidget() != NULL || eventOccurred) 
 	{
 		inactivityCounter = 0;

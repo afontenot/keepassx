@@ -65,6 +65,8 @@ void SettingsWidget::loadSettings()
 
     m_secUi->clearClipboardCheckBox->setChecked(config()->get("security/clearclipboard").toBool());
     m_secUi->clearClipboardSpinBox->setValue(config()->get("security/clearclipboardtimeout").toInt());
+	m_secUi->timeLockCheckBox->setChecked(config()->get("LockOnInactivity").toBool());
+	m_secUi->timeLockSpinBox->setValue(config()->get("LockAfterSec").toInt());
 
     setCurrentRow(0);
 }
@@ -79,6 +81,8 @@ void SettingsWidget::saveSettings()
     config()->set("GlobalAutoTypeModifiers", static_cast<int>(m_generalUi->autoTypeShortcutWidget->modifiers()));
     config()->set("security/clearclipboard", m_secUi->clearClipboardCheckBox->isChecked());
     config()->set("security/clearclipboardtimeout", m_secUi->clearClipboardSpinBox->value());
+	config()->set("LockOnInactivity", m_secUi->timeLockCheckBox->isChecked());
+	config()->set("LockAfterSec", m_secUi->timeLockSpinBox->value());
 
     Q_EMIT editFinished(true);
 }
