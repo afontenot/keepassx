@@ -11,6 +11,9 @@
    </rect>
   </property>
   <layout class="QFormLayout" name="formLayout">
+   <property name="labelAlignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
    <item row="0" column="0">
     <widget class="QCheckBox" name="clearClipboardCheckBox">
      <property name="text">
@@ -33,8 +36,8 @@
       <number>999</number>
      </property>
     </widget>
-	</item>
-	<item row="1" column="0">
+   </item>
+   <item row="1" column="0">
     <widget class="QCheckBox" name="timeLockCheckBox">
      <property name="text">
       <string>Lock database after</string>
@@ -57,7 +60,6 @@
      </property>
     </widget>
    </item>
- 
   </layout>
  </widget>
  <resources/>
