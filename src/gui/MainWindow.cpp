@@ -256,7 +256,8 @@ void MainWindow::openDatabase(const QString& fileName, const QString& pw, const 
 
 void MainWindow::setMenuActionState(DatabaseWidget::Mode mode)
 {
-    bool inDatabaseTabWidget = (m_ui->stackedWidget->currentIndex() == 0);
+	eventOccurred = true;
+	bool inDatabaseTabWidget = (m_ui->stackedWidget->currentIndex() == 0);
     bool inWelcomeWidget = (m_ui->stackedWidget->currentIndex() == 2);
 
     if (inDatabaseTabWidget && m_ui->tabWidget->currentIndex() != -1) {
@@ -378,7 +379,8 @@ void MainWindow::showAboutDialog()
 
 void MainWindow::switchToDatabases()
 {
-    if (m_ui->tabWidget->currentIndex() == -1) {
+	eventOccurred = true;
+   if (m_ui->tabWidget->currentIndex() == -1) {
         m_ui->stackedWidget->setCurrentIndex(2);
     }
     else {
@@ -388,12 +390,14 @@ void MainWindow::switchToDatabases()
 
 void MainWindow::switchToSettings()
 {
-    m_ui->settingsWidget->loadSettings();
+    eventOccurred = true;
+	m_ui->settingsWidget->loadSettings();
     m_ui->stackedWidget->setCurrentIndex(1);
 }
 
 void MainWindow::databaseTabChanged(int tabIndex)
 {
+	eventOccurred = true;
     if (tabIndex != -1 && m_ui->stackedWidget->currentIndex() == 2) {
         m_ui->stackedWidget->setCurrentIndex(0);
     }
@@ -431,7 +435,7 @@ void MainWindow::saveToolbarState(bool value)
 
 void MainWindow::onInactivityTimer()
 {
-	// TODO get eventOccurred working to avoid some nasty issues
+	// TODO work out eventOccurred code for keyboard shortcuts
 	if (QApplication::activeModalWidget() != NULL || eventOccurred) 
 	{
 		inactivityCounter = 0;
