@@ -380,7 +380,7 @@ void MainWindow::showAboutDialog()
 void MainWindow::switchToDatabases()
 {
 	eventOccurred = true;
-   if (m_ui->tabWidget->currentIndex() == -1) {
+	if (m_ui->tabWidget->currentIndex() == -1) {
         m_ui->stackedWidget->setCurrentIndex(2);
     }
     else {
