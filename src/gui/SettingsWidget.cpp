@@ -44,6 +44,12 @@ SettingsWidget::SettingsWidget(QWidget* parent)
 
     connect(m_secUi->clearClipboardCheckBox, SIGNAL(toggled(bool)),
             m_secUi->clearClipboardSpinBox, SLOT(setEnabled(bool)));
+    
+    // Enable or disable relevant checkboxes
+    connect(m_generalUi->rememberLastDatabasesCheckBox, SIGNAL(toggled(bool)),
+            m_generalUi->autoLoadLastDatabaseCheckBox, SLOT(setEnabled(bool)));
+    connect(m_generalUi->autoSaveOnExitCheckBox, SIGNAL(toggled(bool)),
+            m_generalUi->autoSaveAfterEveryChangeCheckBox, SLOT(setEnabled(bool)));
 }
 
 SettingsWidget::~SettingsWidget()
@@ -53,6 +59,7 @@ SettingsWidget::~SettingsWidget()
 void SettingsWidget::loadSettings()
 {
     m_generalUi->rememberLastDatabasesCheckBox->setChecked(config()->get("RememberLastDatabases").toBool());
+    m_generalUi->autoLoadLastDatabaseCheckBox->setChecked(config()->get("AutoLoadDatabase").toBool());
     m_generalUi->modifiedExpandedChangedCheckBox->setChecked(config()->get("ModifiedOnExpandedStateChanges").toBool());
     m_generalUi->autoSaveAfterEveryChangeCheckBox->setChecked(config()->get("AutoSaveAfterEveryChange").toBool());
     m_generalUi->autoSaveOnExitCheckBox->setChecked(config()->get("AutoSaveOnExit").toBool());
@@ -74,6 +81,7 @@ void SettingsWidget::loadSettings()
 void SettingsWidget::saveSettings()
 {
     config()->set("RememberLastDatabases", m_generalUi->rememberLastDatabasesCheckBox->isChecked());
+    config()->set("AutoLoadDatabase", m_generalUi->autoLoadLastDatabaseCheckBox->isChecked());
     config()->set("ModifiedOnExpandedStateChanges", m_generalUi->modifiedExpandedChangedCheckBox->isChecked());
     config()->set("AutoSaveAfterEveryChange", m_generalUi->autoSaveAfterEveryChangeCheckBox->isChecked());
     config()->set("AutoSaveOnExit", m_generalUi->autoSaveOnExitCheckBox->isChecked());

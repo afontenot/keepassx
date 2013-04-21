@@ -73,8 +73,8 @@ private:
 	int inactivityInterval;
 	int inactivityCounter;
 	QTimer* inactivityTimer;
-
-    Q_DISABLE_COPY(MainWindow)
+	
+	Q_DISABLE_COPY(MainWindow)
 };
 
 #endif // KEEPASSX_MAINWINDOW_H

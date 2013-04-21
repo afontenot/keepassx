@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     QObject::connect(&app, SIGNAL(openFile(QString)), &mainWindow, SLOT(openDatabase(QString)));
 
     //QString filename(argumentMap.value("filename"));
-    if (!filename.isEmpty() && QFile::exists(filename)) {
+    if (!filename.isEmpty() && QFile::exists(filename) && config()->get("AutoLoadDatabase").toBool()) {
         mainWindow.openDatabase(filename, argumentMap.value("password"), QString());
     }
 
