@@ -184,6 +184,12 @@ bool DatabaseTabWidget::closeDatabase(Database* db)
     const DatabaseManagerStruct& dbStruct = m_dbList.value(db);
     int index = databaseIndex(db);
     Q_ASSERT(index != -1);
+    
+    // Make sure the file is in the recent database list.
+    // If we just turned on the setting, it's not yet.
+    if (config()->get("RememberLastDatabases").toBool()) {
+        updateLastDatabases(dbStruct.filePath);
+    }
 
     QString dbName = tabText(index);
     if (dbName.right(1) == "*") {
