@@ -2,14 +2,22 @@
 <ui version="4.0">
  <class>WelcomeWidget</class>
  <widget class="QWidget" name="WelcomeWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>69</width>
+    <height>26</height>
+   </rect>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="labelWelcome">
      <property name="text">
-      <string>Welcome!</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Welcome to KeePassX!&lt;/p&gt;&lt;p&gt;To begin, use the File menu to create a database, or open an existing one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
      </property>
     </widget>
    </item>
